@@ -1,6 +1,4 @@
-use std::collections::HashSet;
-
-use parser::{Clusters, Map, MultiLineParser, Nearable, Point};
+use parser::{Clusters, MultiLineParser, Nearable, Point};
 
 pub fn part1(input: String) -> String {
     let mut parser = MultiLineParser::new(&input);
@@ -15,45 +13,15 @@ pub fn part1(input: String) -> String {
 }
 
 pub fn part2(input: String) -> String {
-    let (_parser, map) = parse_input(&input);
-    let areas = to_areas(map);
+    let mut parser = MultiLineParser::new(&input);
+    let areas: Clusters = (&mut parser).into();
 
     let sum: usize = areas
-        .iter()
+        .values()
+        .flatten()
         .map(|points| points.len() * sides(points))
         .sum();
     sum.to_string()
-}
-
-fn parse_input(input: &str) -> (MultiLineParser, Map) {
-    let mut parser = MultiLineParser::new(input);
-    let map: Map = (&mut parser).into();
-    (parser, map)
-}
-
-fn to_areas(map: Map) -> Vec<Vec<Point>> {
-    let mut result: Vec<Vec<Point>> = vec![];
-    for (_char, values) in map {
-        let mut new_vec: Vec<Point> = vec![];
-        let mut char_results = vec![];
-        for point in values {
-            let mut pushed = false;
-            if new_vec.iter().any(|p| p.near(&point)) || new_vec.is_empty() {
-                new_vec.push(point);
-                pushed = true;
-            }
-            if !pushed {
-                char_results.push(new_vec);
-                new_vec = vec![point];
-            }
-        }
-        char_results.push(new_vec);
-        if char_results.len() > 1 {
-            char_results = concat(&char_results);
-        }
-        result.append(&mut char_results);
-    }
-    result
 }
 
 fn perimeter(points: &[Point]) -> usize {
@@ -69,69 +37,35 @@ fn sides(points: &[Point]) -> usize {
     let mut x = vec![];
     let mut y = vec![];
     for point in points.iter() {
-        if point.0 == 0 || !points.contains(&(point.0 - 1, point.1)) {
-            if point.1 == 0
+        if (point.0 == 0 || !points.contains(&(point.0 - 1, point.1)))
+            && (point.1 == 0
                 || !points.contains(&(point.0, point.1 - 1))
-                || point.0 != 0 && points.contains(&(point.0 - 1, point.1 - 1))
-            {
-                y.push(point.0);
-            }
+                || point.0 != 0 && points.contains(&(point.0 - 1, point.1 - 1)))
+        {
+            y.push(point.0);
         }
-        if point.1 == 0 || !points.contains(&(point.0, point.1 - 1)) {
-            if point.0 == 0
+        if (point.1 == 0 || !points.contains(&(point.0, point.1 - 1)))
+            && (point.0 == 0
                 || !points.contains(&(point.0 - 1, point.1))
-                || point.1 != 0 && points.contains(&(point.0 - 1, point.1 - 1))
-            {
-                x.push(point.1);
-            }
+                || point.1 != 0 && points.contains(&(point.0 - 1, point.1 - 1)))
+        {
+            x.push(point.1);
         }
-        if !points.contains(&(point.0 + 1, point.1)) {
-            if !points.contains(&(point.0, point.1 + 1))
-                || points.contains(&(point.0 + 1, point.1 + 1))
-            {
-                y.push(point.0 + 1);
-            }
+        if !points.contains(&(point.0 + 1, point.1))
+            && (!points.contains(&(point.0, point.1 + 1))
+                || points.contains(&(point.0 + 1, point.1 + 1)))
+        {
+            y.push(point.0 + 1);
         }
-        if !points.contains(&(point.0, point.1 + 1)) {
-            if !points.contains(&(point.0 + 1, point.1))
-                || points.contains(&(point.0 + 1, point.1 + 1))
-            {
-                x.push(point.0 + 1);
-            }
+        if !points.contains(&(point.0, point.1 + 1))
+            && (!points.contains(&(point.0 + 1, point.1))
+                || points.contains(&(point.0 + 1, point.1 + 1)))
+        {
+            x.push(point.0 + 1);
         }
     }
 
     x.len() + y.len()
-}
-
-fn concat(areas: &Vec<Vec<Point>>) -> Vec<Vec<Point>> {
-    let mut new_result = vec![];
-    let mut to_skip = HashSet::new();
-    let mut joined = false;
-    for i in 0..areas.len() {
-        if to_skip.contains(&i) {
-            continue;
-        }
-        let mut to_add = areas[i].clone();
-        for j in i + 1..areas.len() {
-            if to_skip.contains(&j) {
-                continue;
-            }
-            for point in areas[i].iter() {
-                if areas[j].iter().any(|p| p.near(point)) {
-                    to_add.append(&mut areas[j].clone());
-                    to_skip.insert(j);
-                    joined = true;
-                    break;
-                }
-            }
-        }
-        new_result.push(to_add);
-    }
-    if joined {
-        return concat(&new_result);
-    }
-    new_result
 }
 
 #[cfg(test)]
