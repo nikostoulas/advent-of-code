@@ -37,29 +37,27 @@ fn sides(points: &[Point]) -> usize {
     let mut x = vec![];
     let mut y = vec![];
     for point in points.iter() {
-        if (point.0 == 0 || !points.contains(&(point.0 - 1, point.1)))
-            && (point.1 == 0
-                || !points.contains(&(point.0, point.1 - 1))
-                || point.0 != 0 && points.contains(&(point.0 - 1, point.1 - 1)))
-        {
+        let contains_point_up = point.0 > 0 && points.contains(&point.up());
+        let contains_point_left = point.1 > 0 && points.contains(&point.left());
+        let contains_point_up_left =
+            point.0 > 0 && point.1 > 0 && points.contains(&point.up().left());
+        // Add fence up
+        if !contains_point_up && (!contains_point_left || contains_point_up_left) {
             y.push(point.0);
         }
-        if (point.1 == 0 || !points.contains(&(point.0, point.1 - 1)))
-            && (point.0 == 0
-                || !points.contains(&(point.0 - 1, point.1))
-                || point.1 != 0 && points.contains(&(point.0 - 1, point.1 - 1)))
-        {
+        // Add fence left
+        if !contains_point_left && (!contains_point_up || contains_point_up_left) {
             x.push(point.1);
         }
-        if !points.contains(&(point.0 + 1, point.1))
-            && (!points.contains(&(point.0, point.1 + 1))
-                || points.contains(&(point.0 + 1, point.1 + 1)))
+        // Add fence down
+        if !points.contains(&point.down())
+            && (!points.contains(&point.right()) || points.contains(&point.down().right()))
         {
             y.push(point.0 + 1);
         }
-        if !points.contains(&(point.0, point.1 + 1))
-            && (!points.contains(&(point.0 + 1, point.1))
-                || points.contains(&(point.0 + 1, point.1 + 1)))
+        // Add fence right
+        if !points.contains(&point.right())
+            && (!points.contains(&point.down()) || points.contains(&point.right().down()))
         {
             x.push(point.0 + 1);
         }

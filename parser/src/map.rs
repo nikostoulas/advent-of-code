@@ -19,14 +19,46 @@ impl From<&mut MultiLineParser> for Map {
 
 pub trait Nearable {
     fn near(&self, near: &Self) -> bool;
+    fn up(&self) -> Self;
+    fn down(&self) -> Self;
+    fn left(&self) -> Self;
+    fn right(&self) -> Self;
+    fn with_direction(&self, direction: &Direction) -> Self;
 }
 
 impl Nearable for Point {
     fn near(&self, b: &Point) -> bool {
-        self.0 == b.0 && self.1 == b.1 + 1
-            || self.0 == b.0 && self.1 + 1 == b.1
-            || self.0 == b.0 + 1 && self.1 == b.1
-            || self.0 + 1 == b.0 && self.1 == b.1
+        self.0 == b.0 && (self.1 == b.1 + 1 || self.1 + 1 == b.1)
+            || (self.0 == b.0 + 1 || self.0 + 1 == b.0) && self.1 == b.1
+    }
+
+    fn up(&self) -> Point {
+        (self.0 - 1, self.1)
+    }
+
+    fn down(&self) -> Point {
+        (self.0 + 1, self.1)
+    }
+
+    fn left(&self) -> Point {
+        (self.0, self.1 - 1)
+    }
+
+    fn right(&self) -> Point {
+        (self.0, self.1 + 1)
+    }
+
+    fn with_direction(&self, direction: &Direction) -> Self {
+        match direction {
+            Direction::Right => self.right(),
+            Direction::RightDown => self.right().down(),
+            Direction::Down => self.down(),
+            Direction::DownLeft => self.down().left(),
+            Direction::Left => self.left(),
+            Direction::LeftUp => self.left().up(),
+            Direction::Up => self.up(),
+            Direction::UpRight => self.up().right(),
+        }
     }
 }
 
@@ -64,9 +96,7 @@ fn bfs(parser: &mut MultiLineParser, char: &char) -> Cluster {
         for direction in Direction::VALUES_4 {
             let next = parser.peek_next_with_direction(&direction);
             if next == Some(char) {
-                parser.advance_with_direction(1, &direction);
-                let point = parser.point();
-                parser.advance_with_direction(1, &direction.opposite());
+                let point = parser.point().with_direction(&direction);
 
                 if seen[point.0][point.1] || added[point.0][point.1] {
                     continue;
