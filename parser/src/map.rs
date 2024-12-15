@@ -1,6 +1,7 @@
 use crate::{Direction, MultiLineParser};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
 pub type Point = (usize, usize);
+pub type PointI64 = (i64, i64);
 pub type Map = HashMap<char, Vec<Point>>;
 pub type Cluster = Vec<Point>;
 pub type Clusters = HashMap<char, Vec<Cluster>>;
@@ -10,7 +11,7 @@ impl From<&mut MultiLineParser> for Map {
         let mut map: Map = HashMap::new();
 
         for (char, point) in parser.iter() {
-            map.entry(char).or_insert(vec![]).push(point);
+            map.entry(char).or_default().push(point);
         }
         parser.reset();
         map
@@ -76,7 +77,7 @@ impl From<&mut MultiLineParser> for Clusters {
             cloned_parser.go_to(point);
             let cluster = bfs(&mut cloned_parser, &char);
             cluster.iter().for_each(|p| added_point[p.0][p.1] = true);
-            clusters.entry(char).or_insert(vec![]).push(cluster);
+            clusters.entry(char).or_default().push(cluster);
         }
         parser.reset();
         clusters
@@ -108,4 +109,58 @@ fn bfs(parser: &mut MultiLineParser, char: &char) -> Cluster {
         }
     }
     cluster
+}
+
+pub trait Solvable: Sized {
+    fn solve_equation(&self, vector_a: &Self, vector_b: &Self) -> Option<Self>;
+}
+
+impl Solvable for PointI64 {
+    fn solve_equation(&self, vector_a: &PointI64, vector_b: &PointI64) -> Option<PointI64> {
+        // a * x + b * y =  x0
+        // g * x + d * y =  y0
+
+        let (a, g) = vector_a;
+        let (b, d) = vector_b;
+        let &(x0, y0) = self;
+
+        let x = (x0 * d - y0 * b) / (d * a - b * g);
+        let y = (y0 - g * x) / d;
+
+        if x0 == a * x + b * y && y0 == g * x + d * y {
+            Some((x, y))
+        } else {
+            None
+        }
+    }
+}
+
+fn to_i64(point: &Point) -> PointI64 {
+    (point.0 as i64, point.1 as i64)
+}
+
+impl Solvable for Point {
+    fn solve_equation(&self, vector_a: &Point, vector_b: &Point) -> Option<Point> {
+        let (x, y) = to_i64(self).solve_equation(&to_i64(vector_a), &to_i64(vector_b))?;
+        if x >= 0 && y >= 0 {
+            Some((x as usize, y as usize))
+        } else {
+            None
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_solve_equation() {
+        let a: Point = (1, 2);
+        let b = (4, 3);
+        let x = (18, 26);
+
+        assert_eq!(x.solve_equation(&a, &b), Some((10, 2)));
+        assert_eq!((19, 26).solve_equation(&a, &b), None);
+    }
 }

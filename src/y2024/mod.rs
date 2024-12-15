@@ -11,6 +11,7 @@ pub mod d3;
 pub mod d8;
 pub mod d12;
 pub mod d9;
+pub mod d13;
 /// Selects the function for the given day and part
 pub fn select_function(day: u32, part: u32) -> Result<fn(String) -> String, String> {
     match day {
@@ -95,6 +96,13 @@ pub fn select_function(day: u32, part: u32) -> Result<fn(String) -> String, Stri
             match part {
                 1 => Ok(d9::part1),
                 2 => Ok(d9::part2),
+                _ => Err("Invalid part!".into()),
+            }
+        }
+        13 => {
+            match part {
+                1 => Ok(d13::part1),
+                2 => Ok(d13::part2),
                 _ => Err("Invalid part!".into()),
             }
         }

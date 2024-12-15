@@ -164,7 +164,9 @@ impl MultiLineParser {
     }
 
     pub fn set(&mut self, target: &char) {
-        self.parsers.get_mut(self.line).map(|p| p.set(target));
+        if let Some(p) = self.parsers.get_mut(self.line) {
+            p.set(target)
+        }
     }
 
     pub fn count_chars(&mut self, target: &char) -> usize {

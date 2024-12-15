@@ -15,7 +15,7 @@ pub enum Number {
     Seven,
     Eight,
     Nine,
-    NAN,
+    Nan,
 }
 
 impl Number {
@@ -47,7 +47,7 @@ impl Number {
         if a.ends_with("nine") || a.starts_with("nine") {
             return Number::Nine;
         }
-        Number::NAN
+        Number::Nan
     }
 
     pub fn number(&self) -> u32 {
@@ -61,7 +61,7 @@ impl Number {
             Number::Seven => 7,
             Number::Eight => 8,
             Number::Nine => 9,
-            Number::NAN => 0,
+            Number::Nan => 0,
         }
     }
 }
@@ -76,7 +76,7 @@ impl Input {
         let length = self.a.len();
         for c in 0..length {
             let a = self.a.chars().nth(c).unwrap();
-            if a.is_digit(10) {
+            if a.is_ascii_digit() {
                 num = num * 10 + a.to_digit(10).unwrap();
                 break;
             }
@@ -88,7 +88,7 @@ impl Input {
         }
         for c in (0..length).rev() {
             let a = self.a.chars().nth(c).unwrap();
-            if a.is_digit(10) {
+            if a.is_ascii_digit() {
                 num = num * 10 + a.to_digit(10).unwrap();
                 break;
             }

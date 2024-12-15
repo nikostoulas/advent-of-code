@@ -54,9 +54,9 @@ impl Parser {
     }
 
     pub fn set(&mut self, target: &char) {
-        self.characters
-            .get_mut(self.cursor)
-            .map(|ref mut c| (**c) = *target);
+        if let Some(ref mut c) = self.characters.get_mut(self.cursor) {
+            (**c) = *target;
+        }
     }
 
     pub fn pop(&mut self) -> Option<&char> {
