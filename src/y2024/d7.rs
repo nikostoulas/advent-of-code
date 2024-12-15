@@ -11,13 +11,15 @@ pub fn part1(input: String) -> String {
 }
 
 pub fn part2(input: String) -> String {
-    let equations = parse_input(input);
-    equations
-        .iter()
-        .filter(|e| can_be_verified(e) || can_be_verified_part2(e))
-        .map(|e| e[0])
-        .sum::<i64>()
-        .to_string()
+    let mut equations = parse_input(input);
+    let mut sum = 0;
+    for e in equations.iter_mut() {
+        if can_be_verified_part2(e) {
+            sum += e[0];
+        }
+    }
+
+    sum.to_string()
 }
 
 fn parse_input(input: String) -> Vec<Vec<i64>> {
@@ -42,34 +44,42 @@ fn parse_input(input: String) -> Vec<Vec<i64>> {
 fn can_be_verified(nums: &[i64]) -> bool {
     if nums.len() == 2 {
         nums[0] == nums[1]
-    } else {
+    } else if nums[0] >= nums[1] {
         let remaining = &nums[3..];
         let mut sum_nums = vec![nums[0], nums[1] + nums[2]];
         sum_nums.extend_from_slice(remaining);
         let mut mul_nums = vec![nums[0], nums[1] * nums[2]];
         mul_nums.extend_from_slice(remaining);
         can_be_verified(&sum_nums) || can_be_verified(&mul_nums)
+    } else {
+        false
     }
 }
-fn can_be_verified_part2(nums: &[i64]) -> bool {
+fn can_be_verified_part2(nums: &mut [i64]) -> bool {
     if nums.len() == 2 {
         nums[0] == nums[1]
+    } else if nums[0] >= nums[1] {
+        let (target, first, second) = (nums[0], nums[1], nums[2]);
+
+        let remaining = &mut nums[1..];
+        remaining[0] = target;
+        remaining[1] = first + second;
+        if can_be_verified_part2(remaining) {
+            return true;
+        }
+        remaining[1] = first * second;
+        if can_be_verified_part2(remaining) {
+            return true;
+        }
+        remaining[1] = (first.to_string() + &second.to_string()).parse().unwrap();
+        if can_be_verified_part2(remaining) {
+            return true;
+        }
+        remaining[0] = first;
+        remaining[1] = second;
+        false
     } else {
-        let remaining = &nums[3..];
-        let mut sum_nums = vec![nums[0], nums[1] + nums[2]];
-        sum_nums.extend_from_slice(remaining);
-        let mut mul_nums = vec![nums[0], nums[1] * nums[2]];
-        mul_nums.extend_from_slice(remaining);
-        let mut concat_nums = vec![
-            nums[0],
-            (nums[1].to_string() + &nums[2].to_string())
-                .parse()
-                .unwrap(),
-        ];
-        concat_nums.extend_from_slice(remaining);
-        can_be_verified_part2(&sum_nums)
-            || can_be_verified_part2(&mul_nums)
-            || can_be_verified_part2(&concat_nums)
+        false
     }
 }
 

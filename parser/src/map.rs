@@ -25,6 +25,7 @@ pub trait Nearable {
     fn left(&self) -> Self;
     fn right(&self) -> Self;
     fn with_direction(&self, direction: &Direction) -> Self;
+    fn with_velocity(&self, velocity: &PointI64, max: &Self) -> Self;
 }
 
 impl Nearable for Point {
@@ -60,6 +61,22 @@ impl Nearable for Point {
             Direction::Up => self.up(),
             Direction::UpRight => self.up().right(),
         }
+    }
+
+    fn with_velocity(&self, velocity: &PointI64, max: &Point) -> Point {
+        let mut point = *self;
+        if velocity.0 < 0 && (self.0 as i64) < -velocity.0 {
+            point.0 = (max.0 + self.0) - ((-velocity.0) as usize);
+        } else {
+            point.0 = (self.0 as i64 + velocity.0) as usize % max.0;
+        }
+        if velocity.1 < 0 && (self.1 as i64) < -velocity.1 {
+            point.1 = (max.1 + self.1) - ((-velocity.1) as usize);
+        } else {
+            point.1 = (self.1 as i64 + velocity.1) as usize % max.1;
+        }
+
+        point
     }
 }
 
@@ -162,5 +179,13 @@ mod tests {
 
         assert_eq!(x.solve_equation(&a, &b), Some((10, 2)));
         assert_eq!((19, 26).solve_equation(&a, &b), None);
+    }
+
+    #[test]
+    fn test_move_with_velocity() {
+        assert_eq!((5, 5).with_velocity(&(-5, -5), &(10, 10)), (0, 0));
+        assert_eq!((5, 5).with_velocity(&(-6, -6), &(10, 10)), (9, 9));
+        assert_eq!((5, 5).with_velocity(&(4, 4), &(10, 10)), (9, 9));
+        assert_eq!((5, 5).with_velocity(&(5, 5), &(10, 10)), (0, 0));
     }
 }
