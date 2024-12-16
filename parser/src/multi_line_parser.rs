@@ -105,6 +105,15 @@ impl MultiLineParser {
         }
     }
 
+    pub fn peek_owned(&self) -> Option<char> {
+        let parser = self.parsers.get(self.line);
+        if let Some(parser) = parser {
+            parser.peek_owned()
+        } else {
+            None
+        }
+    }
+
     pub fn peek_at(&self, line: i32, cursor: i32) -> Option<&char> {
         if self.line as i32 + line < 0 {
             return None;
@@ -342,6 +351,20 @@ impl MultiLineParser {
                 self.parsers[self.line].go_to(cursor + num);
             }
         };
+    }
+
+    pub fn swap(&mut self, point: Point) {
+        let curr_point = self.point();
+        let curr = self.peek_owned();
+        self.go_to(point);
+        let target = self.peek_owned();
+        if let Some(char) = curr {
+            self.set(&char);
+        }
+        self.go_to(curr_point);
+        if let Some(target) = target {
+            self.set(&target);
+        }
     }
 
     pub fn word_count(&self, word: &str) -> Vec<&Direction> {

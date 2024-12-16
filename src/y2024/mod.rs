@@ -2,6 +2,7 @@
 pub mod d14;
 pub mod d10;
 pub mod d11;
+pub mod d15;
 pub mod d4;
 pub mod d1;
 pub mod d5;
@@ -34,6 +35,13 @@ pub fn select_function(day: u32, part: u32) -> Result<fn(String) -> String, Stri
             match part {
                 1 => Ok(d11::part1),
                 2 => Ok(d11::part2),
+                _ => Err("Invalid part!".into()),
+            }
+        }
+        15 => {
+            match part {
+                1 => Ok(d15::part1),
+                2 => Ok(d15::part2),
                 _ => Err("Invalid part!".into()),
             }
         }

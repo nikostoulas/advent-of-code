@@ -15,12 +15,32 @@ impl Display for Parser {
     }
 }
 
+pub struct ParserIterator<'a> {
+    parser: &'a mut Parser,
+}
+
+impl<'a> Iterator for ParserIterator<'a> {
+    type Item = (char, usize);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.parser.is_done() {
+            return None;
+        }
+        let cursor = self.parser.cursor();
+        Some((*self.parser.pop()?, cursor))
+    }
+}
+
 impl Parser {
     pub fn new(str: &str) -> Self {
         Self {
             characters: str.trim().chars().collect(),
             cursor: 0,
         }
+    }
+
+    pub fn iter(&mut self) -> ParserIterator {
+        ParserIterator { parser: self }
     }
 
     pub fn go_to(&mut self, to: usize) -> &mut Self {
@@ -51,6 +71,10 @@ impl Parser {
 
     pub fn peek(&self) -> Option<&char> {
         self.characters.get(self.cursor)
+    }
+
+    pub fn peek_owned(&self) -> Option<char> {
+        Some(*self.characters.get(self.cursor)?)
     }
 
     pub fn set(&mut self, target: &char) {
