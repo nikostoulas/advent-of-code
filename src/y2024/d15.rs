@@ -239,7 +239,7 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
     fn test_part1_input() {
         assert_eq!(
             part1(include_str!("../../.data/y2024/d15.txt").to_string()),
-            "210587128"
+            "1412971"
         );
     }
 
@@ -248,7 +248,7 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^";
     fn test_part2_input() {
         assert_eq!(
             part2(include_str!("../../.data/y2024/d15.txt").to_string()),
-            "7286"
+            "1429299"
         );
     }
 }

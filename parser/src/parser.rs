@@ -39,6 +39,18 @@ impl Parser {
         }
     }
 
+    pub fn create(char: char, len: usize) -> Self {
+        let characters = vec![char; len];
+        Self {
+            characters,
+            cursor: 0,
+        }
+    }
+
+    pub fn chars(&self) -> Vec<char> {
+        self.characters.clone()
+    }
+
     pub fn iter(&mut self) -> ParserIterator {
         ParserIterator { parser: self }
     }

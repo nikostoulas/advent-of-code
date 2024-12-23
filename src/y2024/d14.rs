@@ -57,10 +57,10 @@ pub fn part2(input: String) -> String {
             .count();
 
         if center_count > robots.len() / 3 {
-            _print_points(
-                &robots.iter().map(|(p, _)| p).collect::<Vec<&Point>>(),
-                &max,
-            );
+            // _print_points(
+            //     &robots.iter().map(|(p, _)| p).collect::<Vec<&Point>>(),
+            //     &max,
+            // );
             return i.to_string();
         }
     }

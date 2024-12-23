@@ -47,6 +47,11 @@ impl MultiLineParser {
         MultiLineParser { parsers, line: 0 }
     }
 
+    pub fn create(char: char, len: Point) -> Self {
+        let parsers = vec![Parser::create(char, len.1); len.0];
+        MultiLineParser { parsers, line: 0 }
+    }
+
     pub fn iter(&mut self) -> MultiLineParserIterator {
         MultiLineParserIterator { parser: self }
     }
@@ -71,6 +76,10 @@ impl MultiLineParser {
         self.parsers.iter_mut().map(|p| p.match_number()).collect()
     }
 
+    pub fn to_chars(&mut self) -> Vec<Vec<char>> {
+        self.parsers.iter_mut().map(|p| p.chars).collect()
+    }
+
     pub fn match_number_up_to(&mut self, target: char) -> Vec<Option<i64>> {
         self.parsers
             .iter_mut()
@@ -84,9 +93,10 @@ impl MultiLineParser {
         });
     }
 
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self) -> &mut Self {
         self.line = 0;
         self.parsers.iter_mut().for_each(|p| p.reset());
+        self
     }
 
     pub fn split_to_numbers(&self, delimiter: &str) -> Vec<Vec<i64>> {

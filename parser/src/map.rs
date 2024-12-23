@@ -101,19 +101,19 @@ impl From<&mut MultiLineParser> for Clusters {
     }
 }
 
-fn bfs(parser: &mut MultiLineParser, char: &char) -> Cluster {
+fn bfs(parser: &mut MultiLineParser, needle: &char) -> Cluster {
     let mut seen = vec![vec![false; parser.cursor_len()]; parser.len()];
     let mut added = vec![vec![false; parser.cursor_len()]; parser.len()];
     let mut queue = VecDeque::new();
     queue.push_back(parser.point());
     let mut cluster = vec![parser.point()];
     while !queue.is_empty() {
-        let point = queue.pop_front().unwrap();
-        parser.go_to(point);
-        seen[point.0][point.1] = true;
+        let curr = queue.pop_front().unwrap();
+        parser.go_to(curr);
+        seen[curr.0][curr.1] = true;
         for direction in Direction::VALUES_4 {
             let next = parser.peek_next_with_direction(&direction);
-            if next == Some(char) {
+            if next == Some(needle) {
                 let point = parser.point().with_direction(&direction);
 
                 if seen[point.0][point.1] || added[point.0][point.1] {
