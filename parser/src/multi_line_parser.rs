@@ -77,7 +77,7 @@ impl MultiLineParser {
     }
 
     pub fn to_chars(&mut self) -> Vec<Vec<char>> {
-        self.parsers.iter_mut().map(|p| p.chars).collect()
+        self.parsers.iter_mut().map(|p| p.chars()).collect()
     }
 
     pub fn match_number_up_to(&mut self, target: char) -> Vec<Option<i64>> {
@@ -103,6 +103,13 @@ impl MultiLineParser {
         self.parsers
             .iter()
             .map(|p| p.split_to_numbers(delimiter))
+            .collect()
+    }
+
+    pub fn split_to_strings(&self, delimiter: &str) -> Vec<Vec<String>> {
+        self.parsers
+            .iter()
+            .map(|p| p.split_to_strings(delimiter))
             .collect()
     }
 
