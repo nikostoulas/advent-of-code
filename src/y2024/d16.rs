@@ -40,13 +40,13 @@ fn dijkstra(source: Point, sink: Point, map: &mut MultiLineParser) -> (usize, us
         }
         let adjs: Vec<(Point, Direction)> = get_neighbors(map, &dir);
         for adj in adjs.iter() {
-            let (next, direction) = adj;
+            let (_next, direction) = adj;
             if seen.contains_key(adj) {
                 continue;
             }
             let dir_cost = if dir == *direction { 0 } else { 1000 };
             let cost = costs.get(&lowest).unwrap() + 1 + dir_cost;
-            let prev_cost = if (costs.contains_key(adj)) {
+            let prev_cost = if costs.contains_key(adj) {
                 *costs.get(adj).unwrap()
             } else {
                 usize::MAX

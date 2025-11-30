@@ -17,7 +17,7 @@ pub fn part2(input: String) -> String {
     // let instructions_str = "15415530";
 
     let (_, b, c) = registers;
-    let mut len = 16;
+    // let mut len = 16;
     // let mut i = 345071213 + 12883444 * 512 * 512 * 64;
     // let mut i = 216148338630335 - 2_i128.pow(14);
     //

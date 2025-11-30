@@ -1,4 +1,6 @@
 //! Auto-generated file by build script, do not edit!
+#[path = "y2025/mod.rs"]
+pub mod y2025;
 #[path = "y2024/mod.rs"]
 pub mod y2024;
 #[path = "y2023/mod.rs"]
@@ -10,6 +12,7 @@ pub fn select_function(
     part: u32,
 ) -> Result<fn(String) -> String, String> {
     match year {
+        2025 => Ok(y2025::select_function(day, part)?),
         2024 => Ok(y2024::select_function(day, part)?),
         2023 => Ok(y2023::select_function(day, part)?),
         _ => Err("Invalid year!".into()),

@@ -1,4 +1,4 @@
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 pub fn part1(input: String) -> String {
     let (towels, patterns) = parse_input(input);
 
