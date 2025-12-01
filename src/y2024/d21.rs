@@ -1,5 +1,3 @@
-use std::{collections::HashMap, iter::once};
-
 use parser::{Map, MultiLineParser};
 
 const NUMERIC_KEYPAD: &str = "
@@ -13,15 +11,16 @@ const DIRECTIONAL_KEYPAD: &str = "
 <v>
 ";
 
-pub fn part1(input: String) -> String {
+pub fn part1(_input: String) -> String {
     // let mut (map, map2, parser) = parse_input(input);
     todo!()
 }
 
-pub fn part2(input: String) -> String {
+pub fn part2(_input: String) -> String {
     todo!()
 }
 
+#[allow(dead_code)]
 fn parse_input(input: String) -> (Map, Map, MultiLineParser) {
     let mut numeric_keypad = MultiLineParser::new(NUMERIC_KEYPAD);
     let map: Map = (&mut numeric_keypad).into();
