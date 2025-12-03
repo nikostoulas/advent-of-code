@@ -71,9 +71,9 @@ fn parse(input: &str) -> Vec<(u64, u64)> {
     let ranges_num = ranges
         .iter()
         .map(|s| {
-            let nums: Vec<String> = s.split("-").map(|s| s.to_string()).collect();
-            let from = nums.get(0).unwrap().parse::<u64>().unwrap();
-            let to = nums.get(1).unwrap().parse::<u64>().unwrap();
+            let (from_str, to_str) = s.split_once("-").expect("Invalid range format");
+            let from = from_str.parse::<u64>().unwrap();
+            let to = to_str.parse::<u64>().unwrap();
             (from, to)
         })
         .collect();
