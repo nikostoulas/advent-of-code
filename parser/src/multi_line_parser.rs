@@ -319,6 +319,17 @@ impl MultiLineParser {
         Some(str)
     }
 
+    pub fn peek_all_directions(&self) -> String {
+        let mut result = String::from("");
+        for dir in Direction::VALUES_8.iter() {
+            let peeked = self.peek_next_with_direction(dir);
+            if let Some(peeked) = peeked {
+                result.push(*peeked);
+            }
+        }
+        result.to_string()
+    }
+
     pub fn peek_next_with_direction(&self, direction: &Direction) -> Option<&char> {
         let i = 1;
         let value = match direction {

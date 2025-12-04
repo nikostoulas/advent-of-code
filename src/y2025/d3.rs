@@ -96,8 +96,8 @@ mod tests {
     #[cfg(feature = "test_input")]
     fn test_part1_input() {
         assert_eq!(
-            part1(include_str!("../../.data/y2025/d2.txt").to_string()),
-            "17730"
+            part1(include_str!("../../.data/y2025/d3.txt").to_string()),
+            "17330"
         );
     }
 
@@ -105,8 +105,8 @@ mod tests {
     #[cfg(feature = "test_input")]
     fn test_part2_input() {
         assert_eq!(
-            part2(include_str!("../../.data/y2025/d2.txt").to_string()),
-            "41823587546"
+            part2(include_str!("../../.data/y2025/d3.txt").to_string()),
+            "171518260283767"
         );
     }
 }
