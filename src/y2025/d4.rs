@@ -88,7 +88,7 @@ mod tests {
     fn test_part2_input() {
         assert_eq!(part2(input_file()), "9784");
     }
-
+    #[cfg(feature = "test_input")]
     fn input_file() -> String {
         let name = file!();
         let basename = std::path::Path::new(name)
