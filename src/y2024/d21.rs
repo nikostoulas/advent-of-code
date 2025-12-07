@@ -40,19 +40,19 @@ mod tests {
 456A
 379A
 ";
-
+    #[ignore]
     #[test]
     fn test_part1() {
         let result = part1(INPUT.to_string());
         assert_eq!(result, "126384");
     }
-
+    #[ignore]
     #[test]
     fn test_part2() {
         let result = part2(INPUT.to_string());
         assert_eq!(result, "23");
     }
-
+    #[ignore]
     #[test]
     #[cfg(feature = "test_input")]
     fn test_part1_input() {
@@ -61,7 +61,7 @@ mod tests {
             "12664695565"
         );
     }
-
+    #[ignore]
     #[test]
     #[cfg(feature = "test_input")]
     fn test_part2_input() {

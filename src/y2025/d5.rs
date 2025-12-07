@@ -110,6 +110,7 @@ mod tests {
     fn test_part2_input() {
         assert_eq!(part2(input_file()), "338693411431456");
     }
+
     #[cfg(feature = "test_input")]
     fn input_file() -> String {
         let name = file!();

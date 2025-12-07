@@ -52,6 +52,13 @@ impl MultiLineParser {
         MultiLineParser { parsers, line: 0 }
     }
 
+    pub fn pop_line(&mut self) -> Option<Parser> {
+        if self.line == self.parsers.len() && self.line > 0 {
+            self.line -= 1;
+        }
+        self.parsers.pop()
+    }
+
     pub fn iter(&mut self) -> MultiLineParserIterator {
         MultiLineParserIterator { parser: self }
     }
@@ -103,6 +110,13 @@ impl MultiLineParser {
         self.parsers
             .iter()
             .map(|p| p.split_to_numbers(delimiter))
+            .collect()
+    }
+
+    pub fn split_to_numbers_whitespace(&self) -> Vec<Vec<i64>> {
+        self.parsers
+            .iter()
+            .map(|p| p.split_to_numbers_whitespace())
             .collect()
     }
 

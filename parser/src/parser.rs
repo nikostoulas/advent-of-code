@@ -191,12 +191,32 @@ impl Parser {
             .collect()
     }
 
+    pub fn split_to_numbers_whitespace(&self) -> Vec<i64> {
+        self.characters
+            .iter()
+            .skip(self.cursor)
+            .collect::<String>()
+            .split_whitespace()
+            .map(|n| n.parse().unwrap())
+            .collect()
+    }
+
     pub fn split_to_strings(&self, delimiter: &str) -> Vec<String> {
         self.characters
             .iter()
             .skip(self.cursor)
             .collect::<String>()
             .split(delimiter)
+            .map(|n| n.to_string())
+            .collect()
+    }
+
+    pub fn split_to_strings_whitespace(&self) -> Vec<String> {
+        self.characters
+            .iter()
+            .skip(self.cursor)
+            .collect::<String>()
+            .split_whitespace()
             .map(|n| n.to_string())
             .collect()
     }
