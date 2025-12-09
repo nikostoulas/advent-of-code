@@ -19,72 +19,57 @@ impl Distance for Point {
 }
 
 pub fn part1(input: String) -> String {
-    let numbers = parse_input(&input);
-    let mut clusters: HashMap<Point, usize> = HashMap::new();
-    let mut vectors: Vec<Vec<Point>> = vec![];
-    let mut connections = 0;
-    let mut distance_map: HashMap<u128, Vec<(Point, Point)>> = HashMap::new();
-    numbers.iter().for_each(|a| {
-        numbers.iter().for_each(|b| {
-            if a == b {
-                return;
-            }
+    let mut numbers = parse_input(&input);
 
-            let distance = a.distance(b);
-            let array = distance_map.entry(distance).or_insert(vec![]);
-            if !array.contains(&(*b, *a)) {
-                array.push((*a, *b));
-            }
-        })
+    let result = merge_numbers(&mut numbers, |_ved, conn, _a, _b| conn == 1000);
+    result.to_string()
+}
+
+pub fn part2(input: String) -> String {
+    let mut numbers = parse_input(&input);
+
+    let mut last_a = None;
+    let mut last_b = None;
+
+    merge_numbers(&mut numbers, |vec, _conn, a, b| {
+        if vec.len() > 1 {
+            last_a = Some(*a);
+            last_b = Some(*b);
+        }
+
+        vec.len() == 1
     });
 
+    (last_a.unwrap().0 * last_b.unwrap().0).to_string()
+}
+
+fn parse_input(input: &str) -> Vec<Vec<Point>> {
+    let parser = MultiLineParser::new(input);
+    let numbers = parser.split_to_numbers(",");
+    numbers.iter().map(|n| vec![(n[0], n[1], n[2])]).collect()
+}
+
+fn merge_numbers<F>(numbers: &mut Vec<Vec<Point>>, mut condition_cb: F) -> usize
+where
+    F: FnMut(&mut Vec<Vec<Point>>, usize, &Point, &Point) -> bool,
+{
+    let mut connections = 0;
+
+    let distance_map = create_distance_map(numbers);
     let mut distances: Vec<u128> = distance_map.keys().copied().collect();
     distances.sort();
 
     distances.iter().for_each(|d| {
         let array = distance_map.get(d).unwrap();
         array.iter().for_each(|(a, b)| {
-            if connections == 1000 {
+            if condition_cb(numbers, connections, a, b) {
                 return;
             }
             connections += 1;
-            if clusters.contains_key(a)
-                && clusters.contains_key(b)
-                && clusters.get(a) == clusters.get(b)
-            {
-                return;
-            }
-            if clusters.contains_key(a) && clusters.contains_key(b) {
-                let vector_index = *clusters.get(a).unwrap();
-                let vector_index_b = *clusters.get(b).unwrap();
-                let mut vector_b = vectors.get(vector_index_b).unwrap().clone();
-                let vector = vectors.get_mut(vector_index).unwrap();
-                vector.append(&mut vector_b);
-                let vector_b = vectors.get_mut(vector_index_b).unwrap();
-                for point in vector_b.clone() {
-                    clusters.insert(point, vector_index);
-                }
-                vector_b.clear();
-                clusters.insert(*a, vector_index);
-            } else if clusters.contains_key(a) {
-                let vector_index = *clusters.get(a).unwrap();
-                let vector: &mut Vec<Point> = vectors.get_mut(vector_index).unwrap();
-                vector.push(*b);
-                clusters.insert(*b, vector_index);
-            } else if clusters.contains_key(b) {
-                let vector_index = *clusters.get(b).unwrap();
-                let vector: &mut Vec<Point> = vectors.get_mut(vector_index).unwrap();
-                vector.push(*a);
-                clusters.insert(*a, vector_index);
-            } else {
-                vectors.push(vec![*a, *b]);
-                clusters.insert(*a, vectors.len() - 1);
-                clusters.insert(*b, vectors.len() - 1);
-            }
+            merge(numbers, a, b)
         });
     });
-
-    vectors.sort_by(|a, b| {
+    numbers.sort_by(|a, b| {
         if a.len() > b.len() {
             Ordering::Less
         } else {
@@ -92,14 +77,11 @@ pub fn part1(input: String) -> String {
         }
     });
 
-    (vectors[0].len() * vectors[1].len() * vectors[2].len()).to_string()
+    let result = numbers.iter().take(3).cloned().collect::<Vec<Vec<Point>>>();
+    result.iter().fold(1, |acc, a| acc * a.len())
 }
 
-pub fn part2(input: String) -> String {
-    let numbers = parse_input(&input);
-    let mut clusters: HashMap<Point, usize> = HashMap::new();
-    let mut vectors: Vec<Vec<Point>> = vec![];
-    let mut connections = 0;
+fn create_distance_map(numbers: &mut [Vec<Point>]) -> HashMap<u128, Vec<(Point, Point)>> {
     let mut distance_map: HashMap<u128, Vec<(Point, Point)>> = HashMap::new();
     numbers.iter().for_each(|a| {
         numbers.iter().for_each(|b| {
@@ -107,73 +89,26 @@ pub fn part2(input: String) -> String {
                 return;
             }
 
-            let distance = a.distance(b);
-            let array = distance_map.entry(distance).or_insert(vec![]);
-            if !array.contains(&(*b, *a)) {
-                array.push((*a, *b));
+            let distance = a[0].distance(&b[0]);
+            let array = distance_map.entry(distance).or_default();
+            if !array.contains(&(b[0], a[0])) {
+                array.push((a[0], b[0]));
             }
         })
     });
-
-    let mut distances: Vec<u128> = distance_map.keys().copied().collect();
-    distances.sort();
-
-    let mut last_jo_join: (Point, Point) = ((0, 0, 0), (0, 0, 0));
-    distances.iter().for_each(|d| {
-        let array = distance_map.get(d).unwrap();
-        array.iter().for_each(|(a, b)| {
-            let non_empty = vectors
-                .iter()
-                .filter(|v| !v.is_empty())
-                .collect::<Vec<&Vec<Point>>>();
-            let non_empty_count = non_empty.len();
-            if non_empty_count == 1 && non_empty[0].len() == numbers.len() {
-                return;
-            }
-            connections += 1;
-            if clusters.contains_key(a)
-                && clusters.contains_key(b)
-                && clusters.get(a) == clusters.get(b)
-            {
-                return;
-            }
-            last_jo_join = (*a, *b);
-            if clusters.contains_key(a) && clusters.contains_key(b) {
-                let vector_index = *clusters.get(a).unwrap();
-                let vector_index_b = *clusters.get(b).unwrap();
-                let mut vector_b = vectors.get(vector_index_b).unwrap().clone();
-                let vector = vectors.get_mut(vector_index).unwrap();
-                vector.append(&mut vector_b);
-                let vector_b = vectors.get_mut(vector_index_b).unwrap();
-                for point in vector_b.clone() {
-                    clusters.insert(point, vector_index);
-                }
-                vector_b.clear();
-                clusters.insert(*a, vector_index);
-            } else if clusters.contains_key(a) {
-                let vector_index = *clusters.get(a).unwrap();
-                let vector: &mut Vec<Point> = vectors.get_mut(vector_index).unwrap();
-                vector.push(*b);
-                clusters.insert(*b, vector_index);
-            } else if clusters.contains_key(b) {
-                let vector_index = *clusters.get(b).unwrap();
-                let vector: &mut Vec<Point> = vectors.get_mut(vector_index).unwrap();
-                vector.push(*a);
-                clusters.insert(*a, vector_index);
-            } else {
-                vectors.push(vec![*a, *b]);
-                clusters.insert(*a, vectors.len() - 1);
-                clusters.insert(*b, vectors.len() - 1);
-            }
-        });
-    });
-    (last_jo_join.0 .0 * last_jo_join.1 .0).to_string()
+    distance_map
 }
 
-fn parse_input(input: &str) -> Vec<Point> {
-    let mut parser = MultiLineParser::new(input);
-    let numbers = parser.split_to_numbers(&",");
-    numbers.iter().map(|n| (n[0], n[1], n[2])).collect()
+fn merge(array: &mut Vec<Vec<Point>>, a: &Point, b: &Point) {
+    let position_a = array.iter().position(|v| v.contains(a)).unwrap();
+    let position_b = array.iter().position(|v| v.contains(b)).unwrap();
+    if position_b == position_a {
+        return;
+    }
+    let mut array_b = array.get(position_b).unwrap().clone();
+    let array_a = array.get_mut(position_a).unwrap();
+    array_a.append(&mut array_b);
+    array.remove(position_b);
 }
 
 #[cfg(test)]
@@ -204,8 +139,10 @@ mod tests {
 
     #[test]
     fn test_example_part1() {
-        let result = part1(INPUT.to_string());
-        assert_eq!(result, "0");
+        let mut numbers = parse_input(INPUT);
+
+        let result = merge_numbers(&mut numbers, |_ved, conn, _a, _b| conn == 10);
+        assert_eq!(result, 40);
     }
 
     #[test]
