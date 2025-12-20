@@ -110,14 +110,6 @@ fn bfs_part2(machine: &Machine) -> usize {
 
     while !queue.is_empty() {
         let curr = queue.pop_front().unwrap();
-        if curr
-            .0
-            .iter()
-            .enumerate()
-            .any(|(i, n)| *n > machine.joltage[i])
-        {
-            continue;
-        }
 
         if curr.0 == machine.joltage {
             println!("found {} for machine {:?}", curr.1, machine.joltage);
@@ -132,9 +124,7 @@ fn bfs_part2(machine: &Machine) -> usize {
                 .map(|b| machine.joltage[*b] - pattern[*b])
                 .min()
                 .unwrap();
-            if max_step > curr.1 + 6 {
-                step = max_step;
-            }
+            step = max_step;
 
             button.iter().for_each(|b| pattern[*b] += step);
             if !seen.contains(&pattern) {
@@ -143,7 +133,6 @@ fn bfs_part2(machine: &Machine) -> usize {
             }
         }
     }
-    println!("Not found {:?}", machine.joltage);
     0
 }
 

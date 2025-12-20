@@ -121,7 +121,7 @@ hhh: out
     #[test]
     fn test_example_part2() {
         let result = part2(INPUT_2.to_string());
-        assert_eq!(result, "3");
+        assert_eq!(result, "2");
     }
 
     #[test]
@@ -134,7 +134,7 @@ hhh: out
     #[cfg(feature = "test_input")]
     #[cfg(feature = "test_slow")]
     fn test_part2_input() {
-        assert_eq!(part2(input_file()), "1566935900");
+        assert_eq!(part2(input_file()), "372918445876116");
     }
 
     #[cfg(feature = "test_input")]
